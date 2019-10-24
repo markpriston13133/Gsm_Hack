@@ -1,0 +1,172 @@
+# nano /etc/apt/sources.list
+add
+deb http://old.kali.org kali/sana main non-free contrib
+
+# apt install gcc-4.9 g++-4.9
+#nano /etc/apt/sources.list
+
+comment kali sana
+#apt-get update && apt-get upgrade
+# apt-get install build-essential libgmp-dev libx11-6 libx11-dev flex libncurses5 libncurses5-dev libncursesw5 libpcsclite-dev zlib1g-dev libmpfr4 libmpc3 lemon aptitude libtinfo-dev libtool shtool autoconf git-core pkg-config make libmpfr-dev libmpc-dev libtalloc-dev libfftw3-dev libgnutls28-dev libssl1.0-dev libtool-bin libxml2-dev sofia-sip-bin libsofia-sip-ua-dev sofia-sip-bin libncursesw5-dev libncursesw5-dbg bison libgmp3-dev alsa-oss
+# update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 10
+# update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20
+# update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 10
+# update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20
+# update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 30
+# update-alternatives --set cc /usr/bin/gcc
+# update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30
+# update-alternatives --set c++ /usr/bin/g++
+# update-alternatives --config gcc
+# update-alternatives --config g++
+
+(choose 4.9)
+# apt remove texinfo
+# cd /root
+# wget http://ftp.gnu.org/gnu/texinfo/texinfo-4.13.tar.gz
+# gzip -dc < texinfo-4.13.tar.gz | tar -xf -
+# cd texinfo-4.13
+# ./configure
+# make
+# make install
+# git clone https://github.com/axilirator/gnu-arm-installer.git gnuarm
+# cd gnuarm
+
+Run this scripts:
+# ./download.sh
+# ./build.sh
+# export PATH=$PATH:/root/gnuarm/install/bin
+
+Now you have cross-compiler ready
+
+# cd /root
+# git clone git://git.osmocom.org/libosmocore.git
+# cd libosmocore
+# autoreconf -i
+# ./configure
+# make
+# make install
+# ldconfig
+# cd ..
+# git clone git://git.osmocom.org/libosmo-dsp.git
+# cd libosmo-dsp
+# autoreconf -i
+# ./configure
+# make
+# make install
+# cd ..
+# git clone https://github.com/osmocom/osmocom-bb trx
+# git checkout jolly/testing
+# cd src
+# nano target/firmware/Makefile
+
+It needs TX support Just uncomment 'CFLAGS += -DCONFIG_TX_ENABLE
+# make HOST_layer23_CONFARGS=--enable-transceiver
+# cd /root
+#git clone https://github.com/bastienbaranoff/imsi-catcher
+
+Asterisk version (1.8.13.1) :
+# nano /etc/apt/sources.list
+comment kali rolling and add
+deb http://old.kali.org/kali moto main non-free contrib
+
+# apt update
+# apt install asterisk-dev
+# wget https://downloads.asterisk.org/…/o…/asterisk-1.8.13.1.tar.gz && gzip -dc < asterisk-1.8.13.1.tar.gz | tar -xf -
+# cd /root/asterisk-1.8.13.1
+# nano /root/asterisk-1.8.13.1~dfsg1/main/tcptls.c
+ctrl-W SSLv3
+and change cfg->ssl_ctx = SSL_CTX_new(SSLv3_client_method()), by cfg->ssl_ctx = SSL_CTX_new(SSLv23_client_method());
+
+#./configure CXX=g++-4.9 CC=gcc-4.9
+# make
+# make install
+# nano /etc/apt/sources.list
+
+comment kali moto and uncomment kali rolling
+# apt-get update
+# apt-get install osmocom-nitb osmo-bts
+Download open-core-amr
+# tar xvzf opencore-amr-0.1.5.tar.gz
+# cd opencore-amr-0.1.5
+# ./configure
+# make
+# sudo make install
+# sudo ldconfig
+
+mISDN
+# rm -Rf /lib/modules/$(uname -r)/kernel/drivers/isdn/hardware/mISDN
+# rm -Rf /lib/modules/$(uname -r)/kernel/drivers/isdn/mISDN/
+# depmod -a
+# apt-get install git build-essential libtool autoconf automake linux-headers-4.15.0-kali2-all-amd64
+# git clone https://github.com/b1-systems/mISDN/
+# git clone https://github.com/b1-systems/mISDNuser/
+#git clone https://github.com/bbaranoff/osmocombb-ansible
+# cd mISDN
+# cp /root/osmocombb-ansible/mISDN.patch mISDN.patch
+# patch -p1 < mISDN.patch
+As of Debian 8.5, there is an automake version mismatch, fix it via:
+# aclocal && automake --add-missing
+# ./configure
+# cp /root/osmocombb-ansible/mISDN.cfg.default standalone/mISDN.cfg
+# make modules
+# make modules_install
+# depmod -a
+# cd ../mISDNuser
+
+# make
+# ./configure
+# make
+# make install
+# cd example
+# make
+# cd
+# git clone https://github.com/fairwaves/lcr
+# cd lcr
+# autoreconf -i
+# ./configure --with-sip --with-gsm-bs --with-gsm-ms --with-asterisk
+# make
+# make install
+# ldconfig
+# cp chan_lcr.so /usr/lib/asterisk/modules/
+# cd ../imsi-catcher
+
+Place ~/imsi-catcher/asterisk folder in /etc
+Place interface.conf, routing.conf and options.conf folder in /usr/local/etc/lcr
+Place osmo-bts.cfg and open-bsc.cfg in /root/.osmocom
+Change in /etc/asterisk/sip.conf with your sip provider login and pass (ex diamondcard)
+
+# apt-get install alsa-oss
+# modprobe snd_pcm_oss
+# modprobe snd_mixer_oss
+# modprobe mISDN_core
+# modprobe mISDN_dsp
+
+RUNNING !!!
+
+First search strong rssi
+# cd trx/src/
+# sudo host/osmocon/osmocon -m c123xor -p /dev/ttyUSB0 -c target/firmware/board/compal_e88/rssi.highram.bin
+Ctrl-C remove and put the battery
+Shell #1
+
+# cd trx/src/
+# host/osmocon/osmocon -m c123xor -p /dev/ttyUSB0 -s /tmp/osmocom_l2 -c target/firmware/board/compal_e88/trx.highram.bin -r 99
+
+Shell #2
+# cd trx/src/host/osmocon/osmocon -m c123xor -p /dev/ttyUSB1 -s /tmp/osmocom_l2.2 -c target/firmware/board/compal_e88/trx.highram.bin -r 99
+
+Shell #3
+# cd trx/src/host/layer23/src/transceiver/
+# sudo ./transceiver -a [YOUR ARFCN FOUND WITH RSSI] -2 -r 99
+
+Shell #4
+# osmo-nitb -c ~/.osmocom/open-bsc.cfg -l ~/.osmocom/hlr.sqlite3 -P -m -C --debug=DRLL:DCC:DMM:DRR:DRSL:DNM
+
+Shell #5
+# lcr start
+
+Shell #6
+# osmobts-trx -c ~/.osmocom/osmo-bts.cfg -r 99
+Shell #7
+#asterisk
+#asterisk -rvvvvvv
